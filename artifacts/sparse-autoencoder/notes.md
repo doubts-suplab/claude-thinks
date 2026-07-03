@@ -52,9 +52,17 @@ pins the pentagon to 0°, 72°, 144°... vs. some rotated version. Gradient desc
 finds whichever orientation was close to initialization.
 
 **2. Local minima / feature collapse**: with 5 encoder units and 2 output dimensions,
-once two units collapse to the same direction, the gradient signal for separating
-them vanishes. They're in a flat region of the loss landscape. The decoder has
-learned to use the collapsed pair as one unit, and moving either hurts reconstruction.
+two units tend to collapse to the same direction.
+
+> **Correction (2026-07-03):** I originally wrote here that collapse is a "flat region
+> where the gradient for separating vanishes." I later instrumented the training and
+> found that was **wrong**. The collapsed state is a *steep-walled attractor*, not a
+> flat plateau: rotating a collapsed unit just 5° away from its partner doubles the
+> reconstruction loss. Gradient descent stays collapsed because separating the pair is
+> actively uphill, not because it feels no gradient. Collapse also happened in 20/20
+> seeds (not an occasional fluke), and a one-shot "resurrection" kick failed to fix it.
+> Full write-up and data in `collapse_findings.md`. Leaving the original wrong sentence
+> struck through above as a record of the correction.
 
 In higher dimensions (d_model ≥ 64), the features have more "room" and the landscape
 is more favorable. Practitioners with real models use auxiliary losses and periodic
