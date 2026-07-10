@@ -88,6 +88,18 @@ a different direction (because other features get superposed nearby), the layer 
 W_K has to "chase" it. This might be part of why circuits are hard to find in
 large models — the directions shift as superposition arrangements change.
 
+> **Answered & corrected (2026-07-03).** I built a shared-stream version that trains
+> the induction head's bilinear key-form Q_K with no hand-partitioned subspaces
+> (`shared_stream.py`), and both guesses above turned out wrong. The head does **not**
+> align W_K with the write direction, and it does **not** invert the write. It learns a
+> bilinear form that makes the composite `E^T Q_K M E` merely *diagonally dominant* —
+> enough for the correct predecessor to win the softmax — which is a huge solution
+> family far from any inverse. Consequences (all measured): the circuit is robust to the
+> conditioning of the write (my predicted brittleness was false), and what actually
+> degrades it is interference from other content sharing the stream. Reading a superposed
+> stream is a **ranking** problem solved directly, not a **reconstruction** problem
+> solved by inversion. Full write-up: `shared_stream_findings.md`.
+
 ---
 
 **Source**: Olsson et al., "In-context Learning and Induction Heads" (2022).  
